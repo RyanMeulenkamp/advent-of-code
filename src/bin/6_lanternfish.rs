@@ -79,6 +79,7 @@ fn main() {
     println!("Lanternfish count day 80: {}", shoaling.fish_count());
     let shoaling = shoaling.progress_n_days(256 - 80);
     println!("Lanternfish count day 256: {}", shoaling.fish_count());
+
 }
 
 #[cfg(test)]

@@ -2,11 +2,13 @@
 macro_rules! read_input {
     () => {{
         let filename = file!();
-        let filename = match filename.strip_suffix(".rs") {
-            Some(filename) => filename,
-            None => filename,
-        };
-        std::fs::read_to_string(format!("{}.txt", filename)).expect("File does not exist!")
+        let filename = filename
+            .strip_suffix(".rs")
+            .unwrap()
+            .strip_prefix("src/bin/")
+            .unwrap();
+        let path = std::env::current_dir().unwrap().join(format!("res/{}.txt", filename));
+        std::fs::read_to_string(path).expect("File does not exist!")
     }};
 }
 
