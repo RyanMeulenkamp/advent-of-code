@@ -15,7 +15,7 @@ trait WithInsert<K: Clone + Eq + Hash, V: Clone> {
 
 impl<K: Clone + Eq + Hash, V: Clone> WithInsert<K, V> for HashMap<K, V> {
     fn with_insert(self, key: K, value: V) -> Self {
-        let mut clone = self.clone();
+        let mut clone = self;
         clone.insert(key, value);
         clone
     }
@@ -35,22 +35,15 @@ impl Display {
     }
 
     fn from_notes(notes: Vec<&str>) -> Self {
-        let (mut first_iteration, rest): (Vec<&str>, Vec<&str>) = notes
+        let (mut first_iteration, second_iteration): (Vec<&str>, Vec<&str>) = notes
             .into_iter()
             .partition(|note| Self::KNOWN_SET.contains(&note.len()));
-        let (second_iteration, third_iteration): (Vec<&str>, Vec<&str>) = rest.into_iter()
-            .partition(|note| note.len() == 5);
         first_iteration.extend(second_iteration);
-        first_iteration.extend(third_iteration);
         first_iteration.iter().fold(Self::new(), |display, note| display.process_information(note))
     }
 
-    fn count_matching_characters(a: &str, b: &str) -> u8 {
+    fn overlap(a: &str, b: &str) -> u8 {
         b.chars().filter(|character| a.contains(*character)).count() as u8
-    }
-
-    fn contains(a: &str, b: &str) -> bool {
-        b.chars().all(|character| a.contains(character))
     }
 
     fn decode_digit(&self, input: &str) -> Option<u8> {
@@ -62,18 +55,17 @@ impl Display {
             7 => 8,
 
             // Second iteration
-            5 => if Self::contains(input, &*self.map[&7]) {
+            5 => if Self::overlap(input, &*self.map[&7]) == 3 {
                 3
-            } else if Self::count_matching_characters(&*self.map[&4], input) == 2 {
+            } else if Self::overlap(&*self.map[&4], input) == 2 {
                 2
             } else {
                 5
             }
 
-            // Third iteration
-            6 => if !Self::contains(input, &*self.map[&7]) {
+            6 => if Self::overlap(input, &*self.map[&7]) != 3 {
                 6
-            } else if Self::count_matching_characters(&*self.map[&5], input) == 5 {
+            } else if Self::overlap(&*self.map[&4], input) == 4 {
                 9
             } else {
                 0

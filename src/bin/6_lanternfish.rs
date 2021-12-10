@@ -84,7 +84,7 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use crate::{get_init_state, progress_n_days, Shoaling};
+    use crate::{get_init_state, Shoaling};
 
     const RAW_INPUT: &str = "3,4,3,1,2";
 
@@ -106,10 +106,6 @@ mod tests {
 
     #[test]
     fn test_lanternfish() {
-        assert_eq!(
-            5934,
-            progress_n_days(get_init_state(RAW_INPUT.into()), 80).len()
-        );
         assert_eq!(
             5934,
             Shoaling::from_ages(get_init_state(RAW_INPUT.into()))

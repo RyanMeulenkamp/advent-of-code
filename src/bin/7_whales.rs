@@ -3,17 +3,17 @@
 use advent_of_code::read_input;
 use std::collections::HashMap;
 
-fn mean(positions: &[usize]) -> usize {
+fn _mean(positions: &[usize]) -> usize {
     positions.iter().sum::<usize>() / positions.len()
 }
 
-fn median(positions: &[usize]) -> usize {
+fn _median(positions: &[usize]) -> usize {
     let mut positions = positions.to_vec();
     positions.sort_unstable();
     positions[positions.len() / 2]
 }
 
-fn mode(positions: &[usize]) -> usize {
+fn _mode(positions: &[usize]) -> usize {
     let mut counts = HashMap::new();
 
     positions
@@ -48,9 +48,9 @@ fn align_crabs(
 }
 
 fn optimize_alignment(positions: &[usize], fuel_function: fn(usize) -> usize) -> (usize, usize) {
-    [mean, median, mode]
-        .into_iter()
-        .map(|method| method(positions))
+    let lowest = *positions.into_iter().min().unwrap();
+    let highest = *positions.into_iter().max().unwrap();
+    (lowest..=highest)
         .map(|statistic| (statistic, align_crabs(positions, fuel_function, statistic)))
         .min_by_key(|(_, fuel_consumption)| *fuel_consumption)
         .unwrap()

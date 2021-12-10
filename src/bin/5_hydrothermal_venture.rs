@@ -46,6 +46,10 @@ impl Line {
         self.start.x == self.end.x
     }
 
+    fn is_horizontal(&self) -> bool {
+        self.start.y == self.end.y
+    }
+
     fn length(&self) -> usize {
         if self.is_vertical() {
             self.start.y.abs_diff(self.end.y)
