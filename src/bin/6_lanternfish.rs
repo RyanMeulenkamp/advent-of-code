@@ -50,11 +50,7 @@ impl Shoaling {
     fn progress_day(self) -> Self {
         let mut replacement = Self {
             data: self.data,
-            shift: if self.shift == 8 {
-                0
-            } else {
-                self.shift + 1
-            },
+            shift: if self.shift == 8 { 0 } else { self.shift + 1 },
         };
         replacement[6] += replacement[8];
         replacement
@@ -79,7 +75,6 @@ fn main() {
     println!("Lanternfish count day 80: {}", shoaling.fish_count());
     let shoaling = shoaling.progress_n_days(256 - 80);
     println!("Lanternfish count day 256: {}", shoaling.fish_count());
-
 }
 
 #[cfg(test)]

@@ -6,7 +6,7 @@ use colored::*;
 
 #[derive(Clone)]
 struct Display {
-    map: HashMap<u8, String>
+    map: HashMap<u8, String>,
 }
 
 trait WithInsert<K: Clone + Eq + Hash, V: Clone> {
@@ -22,7 +22,6 @@ impl<K: Clone + Eq + Hash, V: Clone> WithInsert<K, V> for HashMap<K, V> {
 }
 
 impl Display {
-
     const KNOWN_SET: [usize; 4] = [2, 3, 4, 7];
 
     const HORIZONTAL_SEGMENT_CHARS: [&'static str; 2] = ["─", "━"];
@@ -39,7 +38,9 @@ impl Display {
             .into_iter()
             .partition(|note| Self::KNOWN_SET.contains(&note.len()));
         first_iteration.extend(second_iteration);
-        first_iteration.iter().fold(Self::new(), |display, note| display.process_information(note))
+        first_iteration.iter().fold(Self::new(), |display, note| {
+            display.process_information(note)
+        })
     }
 
     fn overlap(a: &str, b: &str) -> u8 {
@@ -55,23 +56,27 @@ impl Display {
             7 => 8,
 
             // Second iteration
-            5 => if Self::overlap(input, &*self.map[&7]) == 3 {
-                3
-            } else if Self::overlap(&*self.map[&4], input) == 2 {
-                2
-            } else {
-                5
+            5 => {
+                if Self::overlap(input, &*self.map[&7]) == 3 {
+                    3
+                } else if Self::overlap(&*self.map[&4], input) == 2 {
+                    2
+                } else {
+                    5
+                }
             }
 
-            6 => if Self::overlap(input, &*self.map[&7]) != 3 {
-                6
-            } else if Self::overlap(&*self.map[&4], input) == 4 {
-                9
-            } else {
-                0
+            6 => {
+                if Self::overlap(input, &*self.map[&7]) != 3 {
+                    6
+                } else if Self::overlap(&*self.map[&4], input) == 4 {
+                    9
+                } else {
+                    0
+                }
             }
 
-            _ => return None
+            _ => return None,
         })
     }
 
@@ -86,9 +91,12 @@ impl Display {
     }
 
     fn decode_number(self, input: Vec<&str>) -> usize {
-        input.iter()
+        input
+            .iter()
             .flat_map(|digit| self.decode_digit(digit))
-            .fold(String::new(), |string, digit| format!("{}{}", string, digit))
+            .fold(String::new(), |string, digit| {
+                format!("{}{}", string, digit)
+            })
             .parse::<usize>()
             .unwrap()
     }
@@ -105,14 +113,14 @@ impl Display {
             8 => [true, true, true, true, true, true, true],
             9 => [true, true, true, true, false, true, true],
             0 => [true, true, true, true, true, true, false],
-            _ => [false; 7]
+            _ => [false; 7],
         }
     }
 
     fn segment_to_character(segment: u8, status: bool, color: Color) -> ColoredString {
         let set = match segment {
             0 | 3 | 6 => Self::HORIZONTAL_SEGMENT_CHARS,
-            _ => Self::VERTICAL_SEGMENT_CHARS
+            _ => Self::VERTICAL_SEGMENT_CHARS,
         };
         if status {
             set[1].color(color)
@@ -122,7 +130,8 @@ impl Display {
     }
 
     fn zip_digits(one: String, another: String) -> String {
-        one.trim().split('\n')
+        one.trim()
+            .split('\n')
             .zip(another.trim().split('\n'))
             .map(|(one, another)| format!("{}    {}", one, another))
             .fold(String::new(), |a, b| a + "\n" + b.as_str())
@@ -138,7 +147,6 @@ impl Display {
     }
 
     fn display_digit(number: u8, color: Color) -> String {
-
         let segments = Self::num_to_segments(number);
         format!(
             "\
@@ -168,33 +176,38 @@ impl Display {
 }
 
 fn count_unique_digits(input: Vec<&str>) -> usize {
-    input.iter()
+    input
+        .iter()
         .filter(|string| Display::KNOWN_SET.contains(&(string.len())))
         .count()
 }
 
 fn read_input_digits(input: &str) -> Vec<(Vec<&str>, Vec<&str>)> {
-    input.trim()
+    input
+        .trim()
         .split('\n')
-        .map(|entry| -> Vec<&str> {
-            entry.split('|').collect()
+        .map(|entry| -> Vec<&str> { entry.split('|').collect() })
+        .map(|parts| {
+            (
+                parts[0].trim().split(' ').collect(),
+                parts[1].trim().split(' ').collect(),
+            )
         })
-        .map(|parts| (
-            parts[0].trim().split(' ').collect(),
-            parts[1].trim().split(' ').collect()
-        ))
         .collect()
 }
 
 fn main() {
     let input = read_input!();
-    let entries= read_input_digits(input.as_str());
+    let entries = read_input_digits(input.as_str());
     println!("Entries: {}", entries.len());
-    let count = entries.clone().into_iter()
+    let count = entries
+        .clone()
+        .into_iter()
         .map(|(_, output)| count_unique_digits(output))
         .sum::<usize>();
     println!("Count: {}", count);
-    let sum: usize = entries.into_iter()
+    let sum: usize = entries
+        .into_iter()
         .map(|(notes, output)| Display::from_notes(notes).decode_number(output))
         .inspect(|number| println!("{}\n", Display::display(*number, Color::Red)))
         .sum();
@@ -204,9 +217,10 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use crate::{read_input_digits, count_unique_digits, Display};
+    use crate::{count_unique_digits, read_input_digits, Display};
 
-    const TEST_SET: &str = "be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
+    const TEST_SET: &str =
+        "be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
 edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
 fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef | cg cg fdcagb cbg
 fbegcd cbd adcefb dageb afcb bc aefdc ecdab fgdeca fcdbega | efabcd cedba gadfec cb
@@ -220,7 +234,8 @@ gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
     #[test]
     fn test_digit_count() {
         let entries = read_input_digits(TEST_SET);
-        let unique_digit_count = entries.into_iter()
+        let unique_digit_count = entries
+            .into_iter()
             .map(|(_, output)| count_unique_digits(output))
             .sum::<usize>();
         assert_eq!(26, unique_digit_count);
@@ -229,7 +244,8 @@ gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
     #[test]
     fn test_digit_deduction() {
         let entries = read_input_digits(TEST_SET);
-        let sum: usize = entries.into_iter()
+        let sum: usize = entries
+            .into_iter()
             .map(|(notes, output)| Display::from_notes(notes).decode_number(output))
             .sum();
         assert_eq!(61229, sum);

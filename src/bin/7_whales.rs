@@ -48,8 +48,8 @@ fn align_crabs(
 }
 
 fn optimize_alignment(positions: &[usize], fuel_function: fn(usize) -> usize) -> (usize, usize) {
-    let lowest = *positions.into_iter().min().unwrap();
-    let highest = *positions.into_iter().max().unwrap();
+    let lowest = *positions.iter().min().unwrap();
+    let highest = *positions.iter().max().unwrap();
     (lowest..=highest)
         .map(|statistic| (statistic, align_crabs(positions, fuel_function, statistic)))
         .min_by_key(|(_, fuel_consumption)| *fuel_consumption)

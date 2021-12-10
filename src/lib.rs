@@ -7,7 +7,9 @@ macro_rules! read_input {
             .unwrap()
             .strip_prefix("src/bin/")
             .unwrap();
-        let path = std::env::current_dir().unwrap().join(format!("res/{}.txt", filename));
+        let path = std::env::current_dir()
+            .unwrap()
+            .join(format!("res/{}.txt", filename));
         std::fs::read_to_string(path).expect("File does not exist!")
     }};
 }

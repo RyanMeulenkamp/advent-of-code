@@ -46,7 +46,7 @@ impl Line {
         self.start.x == self.end.x
     }
 
-    fn is_horizontal(&self) -> bool {
+    fn _is_horizontal(&self) -> bool {
         self.start.y == self.end.y
     }
 
@@ -164,7 +164,7 @@ mod tests {
     fn test_straight_intersection_count() {
         let lines = input_to_lines(RAW_INPUT.split('\n').collect())
             .into_iter()
-            .filter(|line| line.is_horizontal() || line.is_vertical())
+            .filter(|line| line._is_horizontal() || line.is_vertical())
             .collect();
         let field = generate_field(lines);
         let intersections = count_intersections(field);
